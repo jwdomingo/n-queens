@@ -79,7 +79,7 @@ window.countNRooksSolutions = function(n) {
     } // if row === n
   };
 
-  findSolution();
+  //findSolution();
   console.log('Number of solutions for ' + n + ' rooks:', solution);
   return solution;
 };
@@ -95,8 +95,8 @@ window.findNQueensSolution = function(n) {
     template = template || board;
     filledCols = filledCols || blank.slice();
 
-    if(row === n && !template.hasAnyQueensConflicts()) {
-      solution = [].concat(template.rows());
+    if(row === n) {
+      solution = template.rows();
       return solution;
     } else {
       for(var col = 0; col < n; col++) {
@@ -158,7 +158,7 @@ window.countNQueensSolutions = function(n) {
         } // if !filledCols[col]
       } // for 
     }
-  }
+  };
   findSolution();
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
