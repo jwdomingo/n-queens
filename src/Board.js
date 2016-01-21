@@ -138,17 +138,20 @@
 
       for (var i = 0, l = board.length - colIndex; i < l; i++) {
         results += board[i][colIndex + i];
+        if(results > 1) {
+          return true;
+        }
       }
 
-      return results > 1;
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      var len = this.rows().length - 2;
+      var lenMinus2 = this.rows().length - 2;
       var found = false;
       
-      for (var i = -len; i < len; i++) {
+      for (var i = -lenMinus2; i < this.rows().length; i++) {
         if (this.hasMajorDiagonalConflictAt(i)) {
           found = true;
           break;
