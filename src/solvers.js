@@ -53,7 +53,7 @@ window.countNRooksSolutions = function(n) {
   var findSolution = function(template, row) {
     row = row || 0;
     template = template || board;
-    
+
     if(row === n) {
       solution++;
     } else {
@@ -71,18 +71,6 @@ window.countNRooksSolutions = function(n) {
       }
     }
   };
-  /*
-    Base Case:
-    from zero, reached n
-
-    Recursive Case:
-    findNRooksSolution
-
-    for loop
-    start counter resets at 0
-    blank template except for template[0][n]
-
-  */
 
   findSolution();
   console.log('Number of solutions for ' + n + ' rooks:', solution);
