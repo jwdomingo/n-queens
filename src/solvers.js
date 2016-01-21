@@ -15,43 +15,65 @@
 
 
 
-window.findNRooksSolution = function(n) {
-  var solution = new Board({n: n});
+window.findNRooksSolution = function(n, template, start) {
+  template = template || new Board({n: n});
+  start = start || 0;
+
   var blank = _.range(n).map(function(){return 0;});
+  
+  //var topLevel = blank.slice();
 
-  solution.set(0,[1,0,0,0]);
+  window.rookSolutions = [];
+  
+  //topLevel[start] = 1;
+  //template.set(0, topLevel);
 
-  for (var j = 1; j < solution.rows().length; j++) {
-    
-    var row = solution.get(j);
+  for (var row = start; row < template.rows().length; row++) {
+    var currentRow = template.get(row);
 
-    for (var i = 0; i < row.length; i++) {
+    for (var col = 0; col < currentRow.length; col++) {
       var arr = blank.slice();
 
-      arr[i] = 1;
+      arr[col] = 1;
 
-      solution.set(j, arr);
+      template.set(row, arr);
 
-      if (!solution.hasAnyRooksConflicts()) {
-        break;
+      if (!template.hasAnyRooksConflicts()) {
+        debugger;
+        if (start < n - 1) {
+          window.findNRooksSolution(n, template, start + 1);
+        } else {
+          window.rookSolutions.push(template);
+        }
       }
 
-      solution.set(j, blank);
+      template.set(row, blank);
     }
   }
 
-  // place first rook
-  // look one row down where hasNoRowConflictAt, place next rook
-  // go to next row and continue to place where no conflict
 
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution.rows()));
-  return solution.rows();
+  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(window.rookSolutions[0].rows()));
+  return window.rookSolutions[0];
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+
+  /*
+
+    Base Case:
+    from zero, reached n
+
+    Recursive Case:
+    findNRooksSolution
+
+    for loop
+    start counter resets at 0
+    blank template except for template[0][n]
+
+  */
+
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
