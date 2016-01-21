@@ -50,26 +50,33 @@ window.countNRooksSolutions = function(n) {
   var board = new Board({n: n});
   var blank = _.range(n).map(function(){return 0;});
 
-  var findSolution = function(template, row) {
+  var findSolution = function(template, row, filledCols) {
     row = row || 0;
     template = template || board;
+    filledCols = filledCols || blank.slice();
 
     if(row === n) {
       solution++;
     } else {
       for(var col = 0; col < n; col++) {
-        var arr = blank.slice();
-        arr[col] = 1;
-        template.set(row, arr);
+        if (!filledCols[col]) {
+          var arr = blank.slice();
+          arr[col] = 1;
+          template.set(row, arr);
 
-        if(!template.hasAnyRooksConflicts()) {
-          var nextTemplate = new Board(template.rows());
-          findSolution(nextTemplate, row + 1);
-        } else {
-          template.set(row, blank);
-        }
-      }
-    }
+          if(!template.hasAnyRooksConflicts()) {
+            var nextTemplate = new Board(template.rows());
+
+            var newFilledCol = filledCols.slice();
+            newFilledCol[col] = 1;
+
+            findSolution(nextTemplate, row + 1, newFilledCol);
+          } else {
+            template.set(row, blank);
+          }
+        } // if !filledCols[col]
+      } // for
+    } // if row === n
   };
 
   findSolution();
