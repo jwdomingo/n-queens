@@ -46,10 +46,32 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = 0;
+  var solution = 0;
+  var board = new Board({n: n});
+  var blank = _.range(n).map(function(){return 0;});
 
+  var findSolution = function(template, row) {
+    row = row || 0;
+    template = template || board;
+    
+    if(row === n) {
+      solution++;
+    } else {
+      for(var col = 0; col < n; col++) {
+        var arr = blank.slice();
+        arr[col] = 1;
+        template.set(row, arr);
+
+        if(!template.hasAnyRooksConflicts()) {
+          var nextTemplate = new Board(template.rows());
+          findSolution(nextTemplate, row + 1);
+        } else {
+          template.set(row, blank);
+        }
+      }
+    }
+  };
   /*
-
     Base Case:
     from zero, reached n
 
@@ -62,9 +84,9 @@ window.countNRooksSolutions = function(n) {
 
   */
 
-
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  findSolution();
+  console.log('Number of solutions for ' + n + ' rooks:', solution);
+  return solution;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
