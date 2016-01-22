@@ -79,7 +79,7 @@ window.countNRooksSolutions = function(n) {
     } // if row === n
   };
 
-  //findSolution();
+  findSolution();
   console.log('Number of solutions for ' + n + ' rooks:', solution);
   return solution;
 };
@@ -90,17 +90,18 @@ window.findNQueensSolution = function(n) {
   var solution = board.rows();
   var blank = _.range(n).map(function(){return 0;});
 
-  var findSolution = function(template, row, filledCols) {
+  var findSolution = function(template, row, filledCols, illegalCols) {
     row = row || 0;
     template = template || board;
     filledCols = filledCols || blank.slice();
+    illegalCols = illegalCols || blank.slice();
 
     if(row === n) {
       solution = template.rows();
       return solution;
     } else {
       for(var col = 0; col < n; col++) {
-        if (!filledCols[col]) {
+        if (!filledCols[col] && !illegalCols[col]) {
           var arr = blank.slice();
           arr[col] = 1;
           template.set(row, arr);
@@ -110,7 +111,13 @@ window.findNQueensSolution = function(n) {
 
             var newFilledCol = filledCols.slice();
             newFilledCol[col] = 1;
-            findSolution(nextTemplate, row + 1, newFilledCol);
+
+            var newIllegalCol = blank.slice();
+            newIllegalCol[col < 0 ? 0 : col - 1] = 1;
+            newIllegalCol[col > n - 1 ? n - 1 : col + 1] = 1;
+
+
+            findSolution(nextTemplate, row + 1, newFilledCol, newIllegalCol);
           } else {
             template.set(row, blank);
           }
@@ -132,16 +139,18 @@ window.countNQueensSolutions = function(n) {
   var board = new Board({n: n});
   var blank = _.range(n).map(function(){return 0;});
 
-  var findSolution = function(template, row, filledCols) {
+  var findSolution = function(template, row, filledCols, illegalCols) {
     row = row || 0;
     template = template || board;
     filledCols = filledCols || blank.slice();
+    illegalCols = illegalCols || blank.slice();
 
     if(row === n) {
+
       solutionCount++;
     } else {
       for(var col = 0; col < n; col++) {
-        if (!filledCols[col]) {
+        if (!filledCols[col] && !illegalCols[col]) {
           var arr = blank.slice();
           arr[col] = 1;
           template.set(row, arr);
@@ -151,7 +160,12 @@ window.countNQueensSolutions = function(n) {
 
             var newFilledCol = filledCols.slice();
             newFilledCol[col] = 1;
-            findSolution(nextTemplate, row + 1, newFilledCol);
+
+            var newIllegalCol = blank.slice();
+            newIllegalCol[col < 0 ? 0 : col - 1] = 1;
+            newIllegalCol[col > n - 1 ? n - 1 : col + 1] = 1;
+
+            findSolution(nextTemplate, row + 1, newFilledCol, newIllegalCol);
           } else {
             template.set(row, blank);
           }
