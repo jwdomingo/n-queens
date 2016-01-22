@@ -15,7 +15,7 @@
 
 
 
-window.findSolution = function(board, n, row, callback) {
+window.findSolution = function(board, n, row, callback, validator) {
   if (row === n) {
     return callback();
   }
@@ -23,8 +23,11 @@ window.findSolution = function(board, n, row, callback) {
   for (var col = 0; col < n; col++) {
     board.togglePiece(row, col);
 
-    if (!board.hasAnyRooksConflicts()) {
-      findSolution(board, n, row + 1, callback);
+    if (!board[validator]()) {
+      var result = findSolution(board, n, row + 1, callback, validator);
+      if(result) {
+        return result;
+      }
     }
     board.togglePiece(row, col);
   }
@@ -67,7 +70,7 @@ window.countNRooksSolutions = function(n) {
 
   findSolution(board, n, 0, function() {
     solution++;
-  });
+  }, 'hasAnyRooksConflicts');
 
   console.log('Number of solutions for ' + n + ' rooks:', solution);
   return solution;
@@ -124,45 +127,13 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = 0; 
-  var board = new Board({n: n});
-  var blank = _.range(n).map(function(){return 0;});
+  var solution = 0;
+  var board = new Board({n:n});
 
-  var findSolution = function(template, row, filledCols, illegalCols) {
-    row = row || 0;
-    template = template || board;
-    filledCols = filledCols || blank.slice();
-    illegalCols = illegalCols || blank.slice();
+  findSolution(board, n, 0, function() {
+    solution++;
+  }, 'hasAnyQueensConflicts');
 
-    if(row === n) {
-
-      solutionCount++;
-    } else {
-      for(var col = 0; col < n; col++) {
-        if (!filledCols[col] && !illegalCols[col]) {
-          var arr = blank.slice();
-          arr[col] = 1;
-          template.set(row, arr);
-
-          if(!template.hasAnyQueensConflicts()) {
-            var nextTemplate = new Board(template.rows());
-
-            var newFilledCol = filledCols.slice();
-            newFilledCol[col] = 1;
-
-            var newIllegalCol = blank.slice();
-            newIllegalCol[col < 0 ? 0 : col - 1] = 1;
-            newIllegalCol[col > n - 1 ? n - 1 : col + 1] = 1;
-
-            findSolution(nextTemplate, row + 1, newFilledCol, newIllegalCol);
-          } else {
-            template.set(row, blank);
-          }
-        } // if !filledCols[col]
-      } // for 
-    }
-  };
-  findSolution();
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  console.log('Number of solutions for ' + n + ' queens:', solution);
+  return solution;
 };
