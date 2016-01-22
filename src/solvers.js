@@ -15,6 +15,21 @@
 
 
 
+window.findSolution = function(board, n, row, callback) {
+  if (row === n) {
+    return callback();
+  }
+
+  for (var col = 0; col < n; col++) {
+    board.togglePiece(row, col);
+
+    if (!board.hasAnyRooksConflicts()) {
+      findSolution(board, n, row + 1, callback);
+    }
+    board.togglePiece(row, col);
+  }
+};
+
 window.findNRooksSolution = function(n) {
   var solution = new Board({n: n});
     var blank = _.range(n).map(function(){return 0;});
@@ -50,27 +65,10 @@ window.countNRooksSolutions = function(n) {
   var board = new Board({n:n});
   var filledCols = _.range(n).map(function(){return 0;});
 
-  var findSolution = function(row, filledCols) {
-    if (row === n) {
-      solution++;
-      return;
-    }
+  findSolution(board, n, 0, function() {
+    solution++;
+  });
 
-    for (var col = 0; col < n; col++) {
-      if (!filledCols[col]) {
-        board.togglePiece(row, col);
-
-        if (!board.hasAnyRooksConflicts()) {
-          var newFilledCols = filledCols.slice();
-          newFilledCols[col] = 1;
-          findSolution(row + 1, newFilledCols);
-        }
-        board.togglePiece(row, col);
-      }
-    }
-  };
-
-  findSolution(0, filledCols);
   console.log('Number of solutions for ' + n + ' rooks:', solution);
   return solution;
 };
