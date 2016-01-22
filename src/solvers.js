@@ -64,48 +64,14 @@ window.countNRooksSolutions = function(n) {
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var board = new Board({n: n});
-  var solution = board.rows();
-  var blank = _.range(n).map(function(){return 0;});
+  var solution = undefined;
 
-  var findSolution = function(template, row, filledCols, illegalCols) {
-    row = row || 0;
-    template = template || board;
-    filledCols = filledCols || blank.slice();
-    illegalCols = illegalCols || blank.slice();
+  solution = findSolution(board, n, 0, function() {
+    return _.map(board.rows(), function(row) {
+      return row.slice();
+    });
+  }, 'hasAnyQueensConflicts') || board.rows();
 
-    if(row === n) {
-      solution = template.rows();
-      return solution;
-    } else {
-      for(var col = 0; col < n; col++) {
-        if (!filledCols[col] && !illegalCols[col]) {
-          var arr = blank.slice();
-          arr[col] = 1;
-          template.set(row, arr);
-
-          if(!template.hasAnyQueensConflicts()) {
-            var nextTemplate = new Board(template.rows());
-
-            var newFilledCol = filledCols.slice();
-            newFilledCol[col] = 1;
-
-            var newIllegalCol = blank.slice();
-            newIllegalCol[col < 0 ? 0 : col - 1] = 1;
-            newIllegalCol[col > n - 1 ? n - 1 : col + 1] = 1;
-
-
-            findSolution(nextTemplate, row + 1, newFilledCol, newIllegalCol);
-          } else {
-            template.set(row, blank);
-          }
-        } // if !filledCols[col]
-      } // for 
-    }
-
-    return solution;
-  };
-
-  solution = findSolution();
   console.log('Single solution for for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
